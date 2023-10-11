@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AdventureLand - Final Boss Battle</title>
+    <!-- Du trenger ikke gjøre noe med CSS-koden! -->
+    <link rel="stylesheet" href="css-skal-ikke-roeres/index.css" />
+  </head>
+  <body>
+    <div id="container">
+      <!--
+            Life bars 
+            - For å endre på life bar må dere få tak i div etter id, for eksempel "nameless-knight-hp-div".                       
+        -->
+      <div class="life-bar-container knight-container">
+        <img src="images/knight-head.png" />
+        <div class="life-bar" id="nameless-knight-hp-div"></div>
+        <!-- hp (Health Points) til ridderen -->
+      </div>
+
+      <div class="life-bar-container julia-container">
+        <img src="images/julia-head.png" />
+        <div class="life-bar" id="julia-the-archer-hp-div"></div>
+        <!-- hp (Health Points) til Julia -->
+      </div>
+
+      <div class="life-bar-container cat-container">
+        <img src="images/cat-head.png" alt="" />
+        <div class="life-bar" id="the-cat-hp-div"></div>
+        <!-- hp (Health Points) til katten -->
+      </div>
+
+      <div class="life-bar-container big-boss-container">
+        <img src="images/big-boss-head.png" alt="" />
+        <div class="life-bar" id="big-boss-hp-div"></div>
+        <!-- hp (Health Points) til Big boss -->
+      </div>
+
+      <!-- The knight -->
+      <img id="nameless-knight" src="images/knight.png" alt="" />
+
+      <!-- Julia the archer -->
+      <img id="julia-the-archer" src="images/julia-the-archer.png" />
+
+      <!-- The Cat -->
+      <img id="the-cat" src="images/cat.png" alt="" />
+
+      <!-- William the healer -->
+      <img id="william-the-healer" src="images/healer.png" />
+
+      <!-- Jack the lumberjack -->
+      <img id="jack-the-lumberjack" src="images/lumberjack.png" alt="" />
+
+      <!-- The big evil boss -->
+      <img id="big-boss" src="images/big-boss.png" alt="" />
+
+      <!-- Noen ganger dukker et monster opp her -->
+      <img id="appearing-monster" src="" alt=" " />
+    </div>
+    <!-- end container-->
+
+    <!-- Her skrives det ut informasjon om hva brukeren gjør og hva som skjer. -->
+    <div id="output-div"></div>
+
+    <script>
+      var knight = document.getElementById("nameless-knight");
+      var knightHp = document.getElementById("nameless-knight-hp-div");
+      var julia = document.getElementById("julia-the-archer");
+      var juliaHp = document.getElementById("julia-the-archer-hp-div");
+      var cat = document.getElementById("the-cat");
+      var catHp = document.getElementById("the-cat-hp-div");
+      var bossHp = document.getElementById("big-boss-hp-div");
+      var outputDiv = document.getElementById("output-div");
+
+      function updateOutput(attacker, text) {
+        outputDiv.innerHTML = `\n${attacker} ${text}`;
+      }
+
+      function bossAttack() {
+        if (bossHp.offsetWidth <= 0) {
+          return;
+        }
+
+        var targets = [knightHp, juliaHp, catHp];
+        var damage = Math.floor(Math.random() * 50);
+        var randomTarget = targets[Math.floor(Math.random() * targets.length)];
+        var newWidth = Math.max(0, randomTarget.offsetWidth - damage);
+        randomTarget.style.width = `${newWidth}px`;
+
+        var attacker = "The boss";
+        var targetId = randomTarget.id.toLowerCase();
+        var targetName = targetId.includes("nameless-knight")
+          ? "The Knight"
+          : targetId.includes("the-cat")
+          ? "The cat"
+          : targetId.includes("julia")
+          ? "Julia"
+          : targetId.includes("big-boss")
+          ? "Big Boss"
+          : "Unknown";
+        updateOutput(
+          attacker,
+          `attacked ${targetName} and dealt ${damage} damage.`
+        );
+
+        if (newWidth <= 0) {
+          bossHp.style.width = "0px";
+          updateOutput(`${targetName} killed the boss!`);
+        }
+      }
+
+      function knightAttack() {
+        if (bossHp.offsetWidth <= 0) {
+          return;
+        }
+
+        var damage = Math.floor(Math.random() * 50);
+        var newWidth = Math.max(0, bossHp.offsetWidth - damage);
+        bossHp.style.width = `${newWidth}px`;
+
+        updateOutput(
+          `The knight attacked the boss and dealt ${damage} damage.`
+        );
+
+        if (newWidth <= 0) {
+          bossHp.style.width = "0px";
+          updateOutput(`GAME OVER ! , The knight killed the boss!`);
+        } else {
+          bossAttack();
+        }
+      }
+
+      function juliaAttack() {
+        if (bossHp.offsetWidth <= 0) {
+          return;
+        }
+
+        var damage = Math.floor(Math.random() * 50);
+        var newWidth = Math.max(0, bossHp.offsetWidth - damage);
+        bossHp.style.width = `${newWidth}px`;
+
+        updateOutput(`Julia attacked the boss and dealt ${damage} damage.`);
+
+        if (newWidth <= 0) {
+          bossHp.style.width = "0px";
+          updateOutput(`GAME OVER ! , Julia killed the boss!`);
+        } else {
+          bossAttack();
+        }
+      }
+
+      function catAttack() {
+        if (bossHp.offsetWidth <= 0) {
+          return;
+        }
+
+        var damage = Math.floor(Math.random() * 50);
+        var newWidth = Math.max(0, bossHp.offsetWidth - damage);
+        bossHp.style.width = `${newWidth}px`;
+
+        updateOutput(`The cat attacked the boss and dealt ${damage} damage.`);
+
+        if (newWidth <= 0) {
+          bossHp.style.width = "0px";
+          updateOutput(`GAME OVER ! , The cat killed the boss!`);
+        } else {
+          bossAttack();
+        }
+      }
+
+      knight.onclick = knightAttack;
+      julia.onclick = juliaAttack;
+      cat.onclick = catAttack;
+    </script>
+  </body>
+</html>
