@@ -74,8 +74,8 @@
       var bossHp = document.getElementById("big-boss-hp-div");
       var outputDiv = document.getElementById("output-div");
 
-      function updateOutput(attacker, text) {
-        outputDiv.innerHTML = `\n${attacker} ${text}`;
+      function updateOutput(text) {
+        outputDiv.innerHTML = text;
       }
 
       function bossAttack() {
@@ -83,31 +83,17 @@
           return;
         }
 
-        var targets = [knightHp, juliaHp, catHp];
-        var damage = Math.floor(Math.random() * 50);
-        var randomTarget = targets[Math.floor(Math.random() * targets.length)];
+        var heroHp = [knightHp, juliaHp, catHp];
+        var heroName = [knight, julia, cat];
+
+        var damage = Math.floor(Math.random() * 40);
+        var randomTarget = heroHp[Math.floor(Math.random() * heroHp.length)];
         var newWidth = Math.max(0, randomTarget.offsetWidth - damage);
         randomTarget.style.width = `${newWidth}px`;
 
-        var attacker = "The boss";
-        var targetId = randomTarget.id.toLowerCase();
-        var targetName = targetId.includes("nameless-knight")
-          ? "The Knight"
-          : targetId.includes("the-cat")
-          ? "The cat"
-          : targetId.includes("julia")
-          ? "Julia"
-          : targetId.includes("big-boss")
-          ? "Big Boss"
-          : "Unknown";
-        updateOutput(
-          attacker,
-          `attacked ${targetName} and dealt ${damage} damage.`
-        );
-
         if (newWidth <= 0) {
-          bossHp.style.width = "0px";
-          updateOutput(`${targetName} killed the boss!`);
+          // bossHp.style.width = "0px";
+          updateOutput(`${heroName} killed the boss!`);
         }
       }
 
@@ -116,7 +102,7 @@
           return;
         }
 
-        var damage = Math.floor(Math.random() * 50);
+        var damage = Math.floor(Math.random() * 30);
         var newWidth = Math.max(0, bossHp.offsetWidth - damage);
         bossHp.style.width = `${newWidth}px`;
 
@@ -125,7 +111,6 @@
         );
 
         if (newWidth <= 0) {
-          bossHp.style.width = "0px";
           updateOutput(`GAME OVER ! , The knight killed the boss!`);
         } else {
           bossAttack();
@@ -137,14 +122,13 @@
           return;
         }
 
-        var damage = Math.floor(Math.random() * 50);
+        var damage = Math.floor(Math.random() * 30);
         var newWidth = Math.max(0, bossHp.offsetWidth - damage);
         bossHp.style.width = `${newWidth}px`;
 
         updateOutput(`Julia attacked the boss and dealt ${damage} damage.`);
 
         if (newWidth <= 0) {
-          bossHp.style.width = "0px";
           updateOutput(`GAME OVER ! , Julia killed the boss!`);
         } else {
           bossAttack();
@@ -156,14 +140,13 @@
           return;
         }
 
-        var damage = Math.floor(Math.random() * 50);
+        var damage = Math.floor(Math.random() * 30);
         var newWidth = Math.max(0, bossHp.offsetWidth - damage);
         bossHp.style.width = `${newWidth}px`;
 
         updateOutput(`The cat attacked the boss and dealt ${damage} damage.`);
 
         if (newWidth <= 0) {
-          bossHp.style.width = "0px";
           updateOutput(`GAME OVER ! , The cat killed the boss!`);
         } else {
           bossAttack();
