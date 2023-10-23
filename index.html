@@ -120,63 +120,35 @@
       }
 
       function theHealer() {
-        // Definerer en liste av helter som et "array of objects"
-        var heroes = [
-          { name: "Nameless Knight" },
-          { name: "The Cat" },
-          { name: "Julia the Archer" },
-        ];
+        // Velg en tilfeldig helt å helbrede
+        var heroes = ["Nameless Knight", "The Cat", "Julia the Archer"];
+        var randomIndex = Math.floor(Math.random() * heroes.length);
+        var selectedHero = heroes[randomIndex];
 
-        // Velger en tilfeldig helt fra arrayen
-        var randomHeroIndex = Math.floor(Math.random() * heroes.length);
+        // Velg en tilfeldig mengde helbredelse mellom 1 og 20 HP
+        var healAmount = Math.floor(Math.random() * 20) + 1;
 
-        // Genererer en tilfeldig mengde helbredelse mellom 1 og 20
-        var randomHealAmount = Math.floor(Math.random() * 20) + 1;
+        // Vis melding om helbredelsen
+        updateOutput(`Helbreder ${selectedHero} med ${healAmount} HP`);
 
-        // Velger den tilfeldige helt fra arrayen
-        var selectedHero = heroes[randomHeroIndex];
-
-        // Lager en unik ID for HP til den valgte helten
-        var healthBarId = `${selectedHero.name
-          .toLowerCase()
-          .replace(/\s/g, "-")}-hp-div`;
-
-        // Henter HTML-elementet som representerer HP til den valgte helten
-        var healthBar = document.getElementById(healthBarId);
-
-        // Henter den nåværende bredden på HP
-        var initialWidth = healthBar.offsetWidth;
-
-        // Setter en maksimal bredde på 200 piksler for HP
-        var maxWidth = 200;
-
-        // Sjekker om den nåværende bredden er mindre enn maksimal bredde
-        if (initialWidth < maxWidth) {
-          // Beregner hvor mye helbredelse som er mulig uten å overstige maksimal bredde
-          var remainingHeal = maxWidth - initialWidth;
-          var actualHealAmount = Math.min(randomHealAmount, remainingHeal);
-
-          // Oppdaterer bredden på HP med den faktiske helbredelsesmengden
-          var newWidth = initialWidth + actualHealAmount;
-          healthBar.style.width = Math.min(newWidth, maxWidth) + "px";
-
-          // Oppdaterer helteinformasjonen med den helbrede mengden
-          heroes[randomHeroIndex] = selectedHero;
-
-          // Skriver ut en melding om at helten ble helbredet
-          updateOutput(
-            `Healed ${selectedHero.name} by ${actualHealAmount} points`
-          );
-        } else {
-          // Skriver ut en melding om at alle helbredelsesmuligheter er brukt opp
-          updateOutput(`You have used all the healing options now`);
-
-          // Deaktiverer muligheten til å helbrede ved å deaktivere museklikk på helbrederen
+        // Sjekk om helten allerede er fullt helbredet
+        var heroHp = document.getElementById(
+          `${selectedHero.toLowerCase().replace(/ /g, "-")}-hp-div`
+        );
+        if (heroHp.offsetWidth >= 200) {
+          updateOutput(`Du har brukt opp altarnativet for helbredelse`);
           williamTheHealer.style.pointerEvents = "none";
+          return;
         }
+
+        // Helbred helten, men ikke mer enn maksimalt 200 HP
+        var newWidth = Math.min(heroHp.offsetWidth + healAmount, 200);
+        heroHp.style.width = `${newWidth}px`;
       }
 
       williamTheHealer.onclick = theHealer;
+
+      var bossDamage = Math.floor(Math.random() * 30);
 
       function bossAttack() {
         if (bigBossHp.offsetWidth <= 0) {
@@ -187,10 +159,9 @@
         var heroElements = [namelessKnight, theCat, juliaTheArcher];
         var randomHeroIndex = Math.floor(Math.random() * heroElements.length);
         var attackingHero = heroName[randomHeroIndex];
-
-        var damage = Math.floor(Math.random() * 20);
         var randomTarget = herosHp[randomHeroIndex];
-        var newWidth = Math.max(0, randomTarget.offsetWidth - damage);
+        bossDamage = Math.floor(Math.random() * 30);
+        var newWidth = Math.max(0, randomTarget.offsetWidth - bossDamage);
         randomTarget.style.width = `${newWidth}px`;
       }
 
@@ -200,6 +171,7 @@
         }
 
         var damage;
+
         if (bigBossHp.offsetWidth <= 60) {
           bigBoss.style.height = "565px";
           damage = Math.floor(Math.random() * 10); // boss blir større og hero dealer mindre dmg
@@ -207,11 +179,15 @@
           damage = Math.floor(Math.random() * 30);
         }
 
+        var heroName = ["Nameless Knight", "The Cat", "Julia the Archer"];
+        var heroElements = [namelessKnight, theCat, juliaTheArcher];
+        var randomHeroIndex = Math.floor(Math.random() * heroElements.length);
+        var attackingHero = heroName[randomHeroIndex];
+        var randomTarget = herosHp[randomHeroIndex];
         var newWidth = Math.max(0, bigBossHp.offsetWidth - damage);
         bigBossHp.style.width = `${newWidth}px`;
-
         updateOutput(
-          `Nameless knight angriper Big Boss og dealer ${damage} HP`
+          `Nameless knight angriper Big Boss og dealer ${damage} HP, big boss angriper ${attackingHero} og dealer ${bossDamage}`
         );
 
         if (bigBossHp.offsetWidth <= 0) {
@@ -220,6 +196,7 @@
           bigBoss.style.transform = "rotate(90deg)";
           bigBoss.style.transition = "all .3s ease-in-out";
           bigBoss.style.bottom = "-50px";
+          outputDiv.style.background = "green";
           updateOutput(`YOU WIN!, Nameless Knight killed the boss`);
         } else if (namelessKnightHp.offsetWidth <= 0) {
           namelessKnight.style.pointerEvents = "none";
@@ -246,10 +223,17 @@
           damage = Math.floor(Math.random() * 20);
         }
 
+        var heroName = ["Nameless Knight", "The Cat", "Julia the Archer"];
+        var heroElements = [namelessKnight, theCat, juliaTheArcher];
+        var randomHeroIndex = Math.floor(Math.random() * heroElements.length);
+        var attackingHero = heroName[randomHeroIndex];
+        var randomTarget = herosHp[randomHeroIndex];
         var newWidth = Math.max(0, bigBossHp.offsetWidth - damage);
         bigBossHp.style.width = `${newWidth}px`;
 
-        updateOutput(`The cat angriper Big Boss og dealer ${damage} HP`);
+        updateOutput(
+          `The cat angriper Big Boss og dealer ${damage} HP, big boss angriper ${attackingHero} og dealer ${bossDamage}`
+        );
 
         if (bigBossHp.offsetWidth <= 0) {
           // når boss = 0 HP --> YOU WIN
@@ -257,6 +241,7 @@
           bigBoss.style.transform = "rotate(90deg)";
           bigBoss.style.transition = "all .3s ease-in-out";
           bigBoss.style.bottom = "-50px";
+          outputDiv.style.background = "green";
           updateOutput(`YOU WIN!, The cat killed the boss`);
         } else if (theCatHp.offsetWidth <= 0) {
           theCat.style.pointerEvents = "none";
@@ -281,10 +266,17 @@
           damage = Math.floor(Math.random() * 30);
         }
 
+        var heroName = ["Nameless Knight", "The Cat", "Julia the Archer"];
+        var heroElements = [namelessKnight, theCat, juliaTheArcher];
+        var randomHeroIndex = Math.floor(Math.random() * heroElements.length);
+        var attackingHero = heroName[randomHeroIndex];
+        var randomTarget = herosHp[randomHeroIndex];
         var newWidth = Math.max(0, bigBossHp.offsetWidth - damage);
         bigBossHp.style.width = `${newWidth}px`;
 
-        updateOutput(`Julia angriper Big Boss og dealer ${damage} HP`);
+        updateOutput(
+          `Julia angriper Big Boss og dealer ${damage} HP, Big boss angriper ${attackingHero} og dealer ${bossDamage}`
+        );
 
         if (bigBossHp.offsetWidth <= 0) {
           // når boss = 0 HP --> YOU WIN
@@ -292,6 +284,7 @@
           bigBoss.style.transform = "rotate(90deg)";
           bigBoss.style.transition = "all .3s ease-in-out";
           bigBoss.style.bottom = "-50px";
+          outputDiv.style.background = "green";
           updateOutput(`YOU WIN!, Julia killed the boss`);
         } else if (juliaTheArcherHp.offsetWidth <= 0) {
           juliaTheArcher.style.pointerEvents = "none";
