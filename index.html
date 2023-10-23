@@ -55,107 +55,315 @@
 
       <!-- The big evil boss -->
       <img id="big-boss" src="images/big-boss.png" alt="" />
-
-      <!-- Noen ganger dukker et monster opp her -->
-      <img id="appearing-monster" src="" alt=" " />
     </div>
+
+    <!-- Noen ganger dukker et monster opp her -->
+    <img
+      class="appearing-monster"
+      id="appearing-monster-bat"
+      src="images/bat.png"
+      alt=" "
+    />
+    <img
+      class="appearing-monster"
+      id="appearing-monster-slime"
+      src="images/slime.png"
+      alt=" "
+    />
     <!-- end container-->
 
     <!-- Her skrives det ut informasjon om hva brukeren gjør og hva som skjer. -->
-    <div id="output-div"></div>
+    <div id="output-div">
+      <p>Her skal det skrives ut hva som skjer underveis i spillet.</p>
+    </div>
 
     <script>
-      var knight = document.getElementById("nameless-knight");
-      var knightHp = document.getElementById("nameless-knight-hp-div");
-      var julia = document.getElementById("julia-the-archer");
-      var juliaHp = document.getElementById("julia-the-archer-hp-div");
-      var cat = document.getElementById("the-cat");
-      var catHp = document.getElementById("the-cat-hp-div");
-      var bossHp = document.getElementById("big-boss-hp-div");
+      // Her kommer din kode. Du kan også evt. velge å ha JS-koden i ekstern fil.
+
+      // Hero characters
+
+      var namelessKnight = document.getElementById("nameless-knight");
+      var namelessKnightHp = document.getElementById("nameless-knight-hp-div");
+      var theCat = document.getElementById("the-cat");
+      var theCatHp = document.getElementById("the-cat-hp-div");
+      var juliaTheArcher = document.getElementById("julia-the-archer");
+      var juliaTheArcherHp = document.getElementById("julia-the-archer-hp-div");
+
+      // Support character
+      var williamTheHealer = document.getElementById("william-the-healer");
+
+      // Big Boss og appearing monster
+      var bigBoss = document.getElementById("big-boss");
+      var bigBossHp = document.getElementById("big-boss-hp-div");
+      var appearingSlime = document.getElementById("appearing-monster-slime");
+      var appearingBat = document.getElementById("appearing-monster-bat");
+
+      // output div
       var outputDiv = document.getElementById("output-div");
 
+      var herosHp = [namelessKnightHp, theCatHp, juliaTheArcherHp];
+
+      // funksjon for styling av appearing monster
+      function appearingMonsterStyle(monsterName) {
+        monsterName.style.visibility = "hidden";
+        monsterName.style.bottom = "150px";
+        monsterName.style.width = "100px";
+        monsterName.style.borderBottom = "3px solid rgba(150, 50, 50, 0.5";
+        monsterName.style.left = "750px";
+      }
+
+      appearingMonsterStyle(appearingSlime);
+      appearingMonsterStyle(appearingBat);
+
+      // outPutDiv funksjonen
       function updateOutput(text) {
-        outputDiv.innerHTML = text;
+        outputDiv.textContent = text;
+      }
+
+      function theHealer() {
+        // Definerer en liste av helter som et "array of objects"
+        var heroes = [
+          { name: "Nameless Knight" },
+          { name: "The Cat" },
+          { name: "Julia the Archer" },
+        ];
+
+        // Velger en tilfeldig helt fra arrayen
+        var randomHeroIndex = Math.floor(Math.random() * heroes.length);
+
+        // Genererer en tilfeldig mengde helbredelse mellom 1 og 20
+        var randomHealAmount = Math.floor(Math.random() * 20) + 1;
+
+        // Velger den tilfeldige helt fra arrayen
+        var selectedHero = heroes[randomHeroIndex];
+
+        // Lager en unik ID for HP til den valgte helten
+        var healthBarId = `${selectedHero.name
+          .toLowerCase()
+          .replace(/\s/g, "-")}-hp-div`;
+
+        // Henter HTML-elementet som representerer HP til den valgte helten
+        var healthBar = document.getElementById(healthBarId);
+
+        // Henter den nåværende bredden på HP
+        var initialWidth = healthBar.offsetWidth;
+
+        // Setter en maksimal bredde på 200 piksler for HP
+        var maxWidth = 200;
+
+        // Sjekker om den nåværende bredden er mindre enn maksimal bredde
+        if (initialWidth < maxWidth) {
+          // Beregner hvor mye helbredelse som er mulig uten å overstige maksimal bredde
+          var remainingHeal = maxWidth - initialWidth;
+          var actualHealAmount = Math.min(randomHealAmount, remainingHeal);
+
+          // Oppdaterer bredden på HP med den faktiske helbredelsesmengden
+          var newWidth = initialWidth + actualHealAmount;
+          healthBar.style.width = Math.min(newWidth, maxWidth) + "px";
+
+          // Oppdaterer helteinformasjonen med den helbrede mengden
+          heroes[randomHeroIndex] = selectedHero;
+
+          // Skriver ut en melding om at helten ble helbredet
+          updateOutput(
+            `Healed ${selectedHero.name} by ${actualHealAmount} points`
+          );
+        } else {
+          // Skriver ut en melding om at alle helbredelsesmuligheter er brukt opp
+          updateOutput(`You have used all the healing options now`);
+
+          // Deaktiverer muligheten til å helbrede ved å deaktivere museklikk på helbrederen
+          williamTheHealer.style.pointerEvents = "none";
+        }
       }
 
       function bossAttack() {
-        if (bossHp.offsetWidth <= 0) {
-          return;
+        if (bigBossHp.offsetWidth <= 0) {
+          return; // Hvis big boss er død stopper hele spille opp
         }
 
-        var heroHp = [knightHp, juliaHp, catHp];
-        var heroName = [knight, julia, cat];
+        var heroName = ["Nameless Knight", "The Cat", "Julia the Archer"];
+        var heroElements = [namelessKnight, theCat, juliaTheArcher];
+        var randomHeroIndex = Math.floor(Math.random() * heroElements.length);
+        var attackingHero = heroName[randomHeroIndex];
 
-        var damage = Math.floor(Math.random() * 40);
-        var randomTarget = heroHp[Math.floor(Math.random() * heroHp.length)];
+        var damage = Math.floor(Math.random() * 20);
+        var randomTarget = herosHp[randomHeroIndex];
         var newWidth = Math.max(0, randomTarget.offsetWidth - damage);
         randomTarget.style.width = `${newWidth}px`;
-
-        if (newWidth <= 0) {
-          // bossHp.style.width = "0px";
-          updateOutput(`${heroName} killed the boss!`);
-        }
       }
 
       function knightAttack() {
-        if (bossHp.offsetWidth <= 0) {
+        if (bigBossHp.offsetWidth <= 0) {
           return;
         }
 
-        var damage = Math.floor(Math.random() * 30);
-        var newWidth = Math.max(0, bossHp.offsetWidth - damage);
-        bossHp.style.width = `${newWidth}px`;
+        var damage;
+        if (bigBossHp.offsetWidth <= 60) {
+          bigBoss.style.height = "565px";
+          damage = Math.floor(Math.random() * 10); // boss blir større og hero dealer mindre dmg
+        } else {
+          damage = Math.floor(Math.random() * 30);
+        }
+
+        var newWidth = Math.max(0, bigBossHp.offsetWidth - damage);
+        bigBossHp.style.width = `${newWidth}px`;
 
         updateOutput(
-          `The knight attacked the boss and dealt ${damage} damage.`
+          `Nameless knight angriper Big Boss og dealer ${damage} HP`
         );
 
-        if (newWidth <= 0) {
-          updateOutput(`GAME OVER ! , The knight killed the boss!`);
-        } else {
-          bossAttack();
+        if (bigBossHp.offsetWidth <= 0) {
+          // når boss = 0 HP --> YOU WIN
+          bigBossHp.style.width = "0px";
+          bigBoss.style.transform = "rotate(90deg)";
+          bigBoss.style.transition = "all .3s ease-in-out";
+          bigBoss.style.bottom = "-50px";
+          updateOutput(`YOU WIN!, Nameless Knight killed the boss`);
+        } else if (namelessKnightHp.offsetWidth <= 0) {
+          namelessKnight.style.pointerEvents = "none";
+          namelessKnight.style.transform = "rotate(-90deg)";
+          namelessKnight.style.transition = "all .3s ease-in-out";
+          namelessKnight.style.bottom = "60px";
+          updateOutput(`The boss killed Nameless Knight!`);
+          //
         }
-      }
 
-      function juliaAttack() {
-        if (bossHp.offsetWidth <= 0) {
-          return;
-        }
-
-        var damage = Math.floor(Math.random() * 30);
-        var newWidth = Math.max(0, bossHp.offsetWidth - damage);
-        bossHp.style.width = `${newWidth}px`;
-
-        updateOutput(`Julia attacked the boss and dealt ${damage} damage.`);
-
-        if (newWidth <= 0) {
-          updateOutput(`GAME OVER ! , Julia killed the boss!`);
-        } else {
-          bossAttack();
-        }
+        bossAttack();
       }
 
       function catAttack() {
-        if (bossHp.offsetWidth <= 0) {
+        if (bigBossHp.offsetWidth <= 0) {
           return;
         }
 
-        var damage = Math.floor(Math.random() * 30);
-        var newWidth = Math.max(0, bossHp.offsetWidth - damage);
-        bossHp.style.width = `${newWidth}px`;
-
-        updateOutput(`The cat attacked the boss and dealt ${damage} damage.`);
-
-        if (newWidth <= 0) {
-          updateOutput(`GAME OVER ! , The cat killed the boss!`);
+        var damage;
+        if (bigBossHp.offsetWidth <= 60) {
+          bigBoss.style.height = "565px";
+          damage = Math.floor(Math.random() * 10); // boss blir større og hero dealer mindre dmg
         } else {
-          bossAttack();
+          damage = Math.floor(Math.random() * 20);
+        }
+
+        var newWidth = Math.max(0, bigBossHp.offsetWidth - damage);
+        bigBossHp.style.width = `${newWidth}px`;
+
+        updateOutput(`The cat angriper Big Boss og dealer ${damage} HP`);
+
+        if (bigBossHp.offsetWidth <= 0) {
+          // når boss = 0 HP --> YOU WIN
+          bigBossHp.style.width = "0px";
+          bigBoss.style.transform = "rotate(90deg)";
+          bigBoss.style.transition = "all .3s ease-in-out";
+          bigBoss.style.bottom = "-50px";
+          updateOutput(`YOU WIN!, The cat killed the boss`);
+        } else if (theCatHp.offsetWidth <= 0) {
+          theCat.style.pointerEvents = "none";
+          theCat.style.transform = "rotate(-90deg)";
+          theCat.style.transition = "all .3s ease-in-out";
+          theCat.style.bottom = "60px";
+          updateOutput(`The boss killed the cat!`);
+        }
+        bossAttack();
+      }
+
+      function juliaAttack() {
+        if (bigBossHp.offsetWidth <= 0) {
+          return;
+        }
+
+        var damage;
+        if (bigBossHp.offsetWidth <= 60) {
+          bigBoss.style.height = "565px";
+          damage = Math.floor(Math.random() * 10); // boss blir større og hero dealer mindre dmg
+        } else {
+          damage = Math.floor(Math.random() * 30);
+        }
+
+        var newWidth = Math.max(0, bigBossHp.offsetWidth - damage);
+        bigBossHp.style.width = `${newWidth}px`;
+
+        updateOutput(`Julia angriper Big Boss og dealer ${damage} HP`);
+
+        if (bigBossHp.offsetWidth <= 0) {
+          // når boss = 0 HP --> YOU WIN
+          bigBossHp.style.width = "0px";
+          bigBoss.style.transform = "rotate(90deg)";
+          bigBoss.style.transition = "all .3s ease-in-out";
+          bigBoss.style.bottom = "-50px";
+          updateOutput(`YOU WIN!, Julia killed the boss`);
+        } else if (juliaTheArcherHp.offsetWidth <= 0) {
+          juliaTheArcher.style.pointerEvents = "none";
+          juliaTheArcher.style.transform = "rotate(-90deg)";
+          juliaTheArcher.style.transition = "all .3s ease-in-out";
+          juliaTheArcher.style.bottom = "-40px";
+          updateOutput(`The boss killed Julia!`);
+        }
+        bossAttack();
+      }
+
+      // funskjon når man klikker på en av heroene skal en liten monster dukke opp
+      function appearingMonster() {
+        const randomChance = Math.floor(Math.random() * 100); // generere tilfeldige nummer fra 1 til 100
+
+        if (bigBossHp.offsetWidth <= 0) {
+          return;
+        }
+
+        // Noen ganger (med sannsynlighet på 25%) etter at man har gjort et angrep vil en Slime eller Bat dukke opp.
+        if (randomChance <= 25) {
+          appearingBat.style.visibility = "visible";
+          appearingSlime.style.visibility = "hidden";
+        } else if (randomChance >= 75) {
+          appearingSlime.style.visibility = "visible";
+          appearingBat.style.visibility = "hidden";
+        } else {
+          appearingBat.style.visibility = "hidden";
+          appearingSlime.style.visibility = "hidden";
         }
       }
 
-      knight.onclick = knightAttack;
-      julia.onclick = juliaAttack;
-      cat.onclick = catAttack;
+      namelessKnight.onclick = function () {
+        if (
+          appearingSlime.style.visibility === "visible" ||
+          appearingBat.style.visibility === "visible"
+        ) {
+          knightAttack();
+          bossAttack();
+          return;
+        } else {
+          appearingMonster();
+          knightAttack();
+        }
+      };
+
+      theCat.onclick = function () {
+        if (
+          appearingSlime.style.visibility === "visible" ||
+          appearingBat.style.visibility === "visible"
+        ) {
+          appearingSlime.style.visibility = "hidden";
+          bossAttack();
+        } else {
+          catAttack();
+          appearingMonster();
+        }
+      };
+
+      juliaTheArcher.onclick = function () {
+        if (
+          appearingBat.style.visibility === "visible" ||
+          appearingSlime.style.visibility === "visible"
+        ) {
+          appearingBat.style.visibility = "hidden";
+          bossAttack();
+        } else {
+          juliaAttack();
+          appearingMonster();
+        }
+      };
+
+      williamTheHealer.onclick = theHealer;
     </script>
   </body>
 </html>
