@@ -1,4 +1,4 @@
-# arbeidskrav-programmering
+# Arbeidskrav-programmering
 
 Semester 1
 
